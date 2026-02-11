@@ -1,0 +1,15 @@
+{
+  "Group": "com.froxot",
+  "Name": "SleepTilNight",
+  "Version": "1.0.0",
+  "Description": "Allows you to go to sleep during day and wake up in the afternoon.",
+  "Main": "com.froxot.sleeptilnight.Main",
+  "Authors": [
+    {
+      "Name": "Yazazuyo"
+    }
+  ],
+  "ServerVersion": ">=1.0.0",
+  "Dependencies": {},
+  "IncludesAssetPack": false
+}
