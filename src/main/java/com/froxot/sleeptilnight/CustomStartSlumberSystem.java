@@ -6,10 +6,10 @@ import com.hypixel.hytale.builtin.beds.sleep.resources.WorldSleep;
 import com.hypixel.hytale.builtin.beds.sleep.resources.WorldSlumber;
 import com.hypixel.hytale.builtin.beds.sleep.resources.WorldSomnolence;
 import com.hypixel.hytale.builtin.beds.sleep.systems.world.CanSleepInWorld;
-import com.hypixel.hytale.builtin.beds.sleep.systems.world.StartSlumberSystem;
 import com.hypixel.hytale.component.ComponentAccessor;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.component.system.DelayedSystem;
 import com.hypixel.hytale.server.core.modules.time.WorldTimeResource;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -24,13 +24,14 @@ import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
-public class CustomStartSlumberSystem extends StartSlumberSystem {
+public class CustomStartSlumberSystem extends DelayedSystem<EntityStore> {
     public static final Duration NODDING_OFF_DURATION = Duration.ofMillis(3200L);
     public static final Duration WAKE_UP_AUTOSLEEP_DELAY = Duration.ofHours(1L);
 
     private final Config<SleepTilNightConfig> config;
 
     public CustomStartSlumberSystem(Config<SleepTilNightConfig> config) {
+        super(0.3F);
         this.config = config;
     }
 
