@@ -38,34 +38,6 @@ public class CustomStartSlumberSystem extends StartSlumberSystem {
         this.checkIfEveryoneIsReadyToSleep(store);
     }
 
-    public static boolean isReadyToSleep(ComponentAccessor<EntityStore> store, Ref<EntityStore> ref) {
-        PlayerSomnolence somnolence = store.getComponent(ref, PlayerSomnolence.getComponentType());
-        if (somnolence == null) {
-            return false;
-        } else {
-            boolean var10000;
-            switch (somnolence.getSleepState()) {
-                case PlayerSleep.FullyAwake ignored:
-                    var10000 = false;
-                    break;
-                case PlayerSleep.MorningWakeUp morningWakeUp:
-                    WorldTimeResource worldTimeResource = store.getResource(WorldTimeResource.getResourceType());
-                    Instant readyTime = morningWakeUp.gameTimeStart().plus(WAKE_UP_AUTOSLEEP_DELAY);
-                    var10000 = worldTimeResource.getGameTime().isAfter(readyTime);
-                    break;
-                case PlayerSleep.NoddingOff noddingOff:
-                    Instant sleepStart = noddingOff.realTimeStart().plus(NODDING_OFF_DURATION);
-                    var10000 = Instant.now().isAfter(sleepStart);
-                    break;
-                case PlayerSleep.Slumber ignored:
-                    var10000 = true;
-                    break;
-            }
-
-            return var10000;
-        }
-    }
-
     private void checkIfEveryoneIsReadyToSleep(Store<EntityStore> store) {
         World world = (store.getExternalData()).getWorld();
         Collection<PlayerRef> playerRefs = world.getPlayerRefs();
@@ -121,5 +93,33 @@ public class CustomStartSlumberSystem extends StartSlumberSystem {
             }
         }
         return true;
+    }
+
+    public static boolean isReadyToSleep(ComponentAccessor<EntityStore> store, Ref<EntityStore> ref) {
+        PlayerSomnolence somnolence = store.getComponent(ref, PlayerSomnolence.getComponentType());
+        if (somnolence == null) {
+            return false;
+        } else {
+            boolean var10000;
+            switch (somnolence.getSleepState()) {
+                case PlayerSleep.FullyAwake ignored:
+                    var10000 = false;
+                    break;
+                case PlayerSleep.MorningWakeUp morningWakeUp:
+                    WorldTimeResource worldTimeResource = store.getResource(WorldTimeResource.getResourceType());
+                    Instant readyTime = morningWakeUp.gameTimeStart().plus(WAKE_UP_AUTOSLEEP_DELAY);
+                    var10000 = worldTimeResource.getGameTime().isAfter(readyTime);
+                    break;
+                case PlayerSleep.NoddingOff noddingOff:
+                    Instant sleepStart = noddingOff.realTimeStart().plus(NODDING_OFF_DURATION);
+                    var10000 = Instant.now().isAfter(sleepStart);
+                    break;
+                case PlayerSleep.Slumber ignored:
+                    var10000 = true;
+                    break;
+            }
+
+            return var10000;
+        }
     }
 }
