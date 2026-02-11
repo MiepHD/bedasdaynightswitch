@@ -39,25 +39,25 @@ public class CustomStartSlumberSystem extends StartSlumberSystem {
     }
 
     public static boolean isReadyToSleep(ComponentAccessor<EntityStore> store, Ref<EntityStore> ref) {
-        PlayerSomnolence somnolence = (PlayerSomnolence)store.getComponent(ref, PlayerSomnolence.getComponentType());
+        PlayerSomnolence somnolence = store.getComponent(ref, PlayerSomnolence.getComponentType());
         if (somnolence == null) {
             return false;
         } else {
             boolean var10000;
             switch (somnolence.getSleepState()) {
-                case PlayerSleep.FullyAwake fullyAwake:
+                case PlayerSleep.FullyAwake ignored:
                     var10000 = false;
                     break;
                 case PlayerSleep.MorningWakeUp morningWakeUp:
-                    WorldTimeResource worldTimeResource = (WorldTimeResource)store.getResource(WorldTimeResource.getResourceType());
+                    WorldTimeResource worldTimeResource = store.getResource(WorldTimeResource.getResourceType());
                     Instant readyTime = morningWakeUp.gameTimeStart().plus(WAKE_UP_AUTOSLEEP_DELAY);
                     var10000 = worldTimeResource.getGameTime().isAfter(readyTime);
                     break;
                 case PlayerSleep.NoddingOff noddingOff:
                     Instant sleepStart = noddingOff.realTimeStart().plus(NODDING_OFF_DURATION);
-                    var10000 = true;
+                    var10000 = Instant.now().isAfter(sleepStart);
                     break;
-                case PlayerSleep.Slumber slumber:
+                case PlayerSleep.Slumber ignored:
                     var10000 = true;
                     break;
             }
@@ -67,10 +67,10 @@ public class CustomStartSlumberSystem extends StartSlumberSystem {
     }
 
     private void checkIfEveryoneIsReadyToSleep(Store<EntityStore> store) {
-        World world = ((EntityStore)store.getExternalData()).getWorld();
+        World world = (store.getExternalData()).getWorld();
         Collection<PlayerRef> playerRefs = world.getPlayerRefs();
         if (!playerRefs.isEmpty()) {
-            float wakeUpHour = 0;
+            float wakeUpHour;
             if (!CanSleepInWorld.check(world).isNegative()) {
                 wakeUpHour = world.getGameplayConfig().getWorldConfig().getSleepConfig().getWakeUpHour();
             } else {
@@ -90,7 +90,6 @@ public class CustomStartSlumberSystem extends StartSlumberSystem {
                         commandBuffer.putComponent(ref, PlayerSomnolence.getComponentType(), PlayerSleep.Slumber.createComponent(timeResource));
                     });
                 }
-
             }
         }
     }
@@ -98,36 +97,29 @@ public class CustomStartSlumberSystem extends StartSlumberSystem {
 
     private Instant computeWakeupInstant(@Nonnull Instant now, float wakeUpHour) {
         LocalDateTime ldt = LocalDateTime.ofInstant(now, ZoneOffset.UTC);
-        int hours = (int)wakeUpHour;
-        float fractionalHour = wakeUpHour - (float)hours;
-        LocalDateTime wakeUpTime = ldt.toLocalDate().atTime(hours, (int)(fractionalHour * 60.0F));
-        if (!ldt.isBefore(wakeUpTime)) {
-            wakeUpTime = wakeUpTime.plusDays(1L);
-        }
-
+        int hours = (int) wakeUpHour;
+        float fractionalHour = wakeUpHour - (float) hours;
+        LocalDateTime wakeUpTime = ldt.toLocalDate().atTime(hours, (int) (fractionalHour * 60.0F));
+        if (!ldt.isBefore(wakeUpTime)) wakeUpTime = wakeUpTime.plusDays(1L);
         return wakeUpTime.toInstant(ZoneOffset.UTC);
     }
 
     private static float computeIrlSeconds(Instant startInstant, Instant targetInstant) {
         long ms = Duration.between(startInstant, targetInstant).toMillis();
         long hours = TimeUnit.MILLISECONDS.toHours(ms);
-        double seconds = Math.max((double)3.0F, (double)hours / (double)6.0F);
-        return (float)Math.ceil(seconds);
+        double seconds = Math.max(3.0, (double) hours / 6.0);
+        return (float) Math.ceil(seconds);
     }
 
     private boolean isEveryoneReadyToSleep(ComponentAccessor<EntityStore> store) {
-        World world = ((EntityStore)store.getExternalData()).getWorld();
+        World world = (store.getExternalData()).getWorld();
         Collection<PlayerRef> playerRefs = world.getPlayerRefs();
-        if (playerRefs.isEmpty()) {
-            return false;
-        } else {
-            for(PlayerRef playerRef : playerRefs) {
-                if (!isReadyToSleep(store, playerRef.getReference())) {
-                    return false;
-                }
+        if (playerRefs.isEmpty()) return false;
+        for(PlayerRef playerRef : playerRefs) {
+            if (!isReadyToSleep(store, playerRef.getReference())) {
+                return false;
             }
-
-            return true;
         }
+        return true;
     }
 }
