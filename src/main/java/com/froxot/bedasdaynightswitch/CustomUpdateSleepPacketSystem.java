@@ -1,4 +1,4 @@
-package com.froxot.sleeptilnight;
+package com.froxot.bedasdaynightswitch;
 
 import com.hypixel.hytale.builtin.beds.sleep.components.PlayerSleep;
 import com.hypixel.hytale.builtin.beds.sleep.components.PlayerSomnolence;
@@ -7,14 +7,10 @@ import com.hypixel.hytale.builtin.beds.sleep.resources.WorldSleep;
 import com.hypixel.hytale.builtin.beds.sleep.resources.WorldSlumber;
 import com.hypixel.hytale.builtin.beds.sleep.resources.WorldSomnolence;
 import com.hypixel.hytale.builtin.beds.sleep.systems.player.UpdateSleepPacketSystem;
-import com.hypixel.hytale.builtin.beds.sleep.systems.world.CanSleepInWorld;
-import com.hypixel.hytale.builtin.beds.sleep.systems.world.StartSlumberSystem;
 import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.component.query.Query;
-import com.hypixel.hytale.component.system.tick.DelayedEntitySystem;
 import com.hypixel.hytale.protocol.packets.world.SleepClock;
 import com.hypixel.hytale.protocol.packets.world.SleepMultiplayer;
 import com.hypixel.hytale.protocol.packets.world.UpdateSleepState;

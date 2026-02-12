@@ -1,9 +1,9 @@
 {
   "Group": "com.froxot",
-  "Name": "SleepTilNight",
+  "Name": "Bed As Day-Night Switch",
   "Version": "1.0.0",
   "Description": "Allows you to go to sleep during day and wake up in the afternoon.",
-  "Main": "com.froxot.sleeptilnight.Main",
+  "Main": "com.froxot.bedasdaynightswitch.Main",
   "Authors": [
     {
       "Name": "Yazazuyo"

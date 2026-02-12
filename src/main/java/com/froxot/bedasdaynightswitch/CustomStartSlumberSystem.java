@@ -1,4 +1,4 @@
-package com.froxot.sleeptilnight;
+package com.froxot.bedasdaynightswitch;
 
 import com.hypixel.hytale.builtin.beds.sleep.components.PlayerSleep;
 import com.hypixel.hytale.builtin.beds.sleep.components.PlayerSomnolence;

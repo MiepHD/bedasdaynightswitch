@@ -1,4 +1,4 @@
-package com.froxot.sleeptilnight;
+package com.froxot.bedasdaynightswitch;
 
 import com.hypixel.hytale.codec.Codec; // Careful to not use other Codec imports
 import com.hypixel.hytale.codec.KeyedCodec;
