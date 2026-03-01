@@ -108,8 +108,7 @@ public class CustomStartSlumberSystem extends DelayedSystem<EntityStore> {
                     break;
                 case PlayerSleep.MorningWakeUp morningWakeUp:
                     WorldTimeResource worldTimeResource = store.getResource(WorldTimeResource.getResourceType());
-                    Instant readyTime = morningWakeUp.gameTimeStart().plus(WAKE_UP_AUTOSLEEP_DELAY);
-                    var10000 = worldTimeResource.getGameTime().isAfter(readyTime);
+                    var10000 = morningWakeUp.isReadyToSleepAgain(worldTimeResource.getGameTime());
                     break;
                 case PlayerSleep.NoddingOff noddingOff:
                     Instant sleepStart = noddingOff.realTimeStart().plus(NODDING_OFF_DURATION);

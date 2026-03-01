@@ -7,16 +7,16 @@ import com.hypixel.hytale.builtin.beds.sleep.resources.WorldSleep;
 import com.hypixel.hytale.builtin.beds.sleep.resources.WorldSlumber;
 import com.hypixel.hytale.builtin.beds.sleep.resources.WorldSomnolence;
 import com.hypixel.hytale.builtin.beds.sleep.systems.player.UpdateSleepPacketSystem;
-import com.hypixel.hytale.component.ArchetypeChunk;
-import com.hypixel.hytale.component.CommandBuffer;
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.protocol.packets.world.SleepClock;
 import com.hypixel.hytale.protocol.packets.world.SleepMultiplayer;
 import com.hypixel.hytale.protocol.packets.world.UpdateSleepState;
+import com.hypixel.hytale.server.core.modules.time.WorldTimeResource;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -29,6 +29,11 @@ import javax.annotation.Nullable;
 public class CustomUpdateSleepPacketSystem extends UpdateSleepPacketSystem {
     private static final UUID[] EMPTY_UUIDS = new UUID[0];
     private static final UpdateSleepState PACKET_NO_SLEEP_UI = new UpdateSleepState(false, false, (SleepClock)null, (SleepMultiplayer)null);
+    private static final Duration SPAN_BEFORE_BLACK_SCREEN = Duration.ofMillis(1200L);
+
+    public CustomUpdateSleepPacketSystem(@NonNullDecl ComponentType<EntityStore, PlayerRef> playerRefComponentType, @NonNullDecl ComponentType<EntityStore, PlayerSomnolence> playerSomnolenceComponentType, @NonNullDecl ComponentType<EntityStore, SleepTracker> sleepTrackerComponentType, @NonNullDecl ResourceType<EntityStore, WorldSomnolence> worldSomnolenceResourceType, @NonNullDecl ResourceType<EntityStore, WorldTimeResource> worldTimeResourceType) {
+        super(playerRefComponentType, playerSomnolenceComponentType, sleepTrackerComponentType, worldSomnolenceResourceType, worldTimeResourceType);
+    }
 
     public void tick(float dt, int index, @Nonnull ArchetypeChunk<EntityStore> archetypeChunk, @Nonnull Store<EntityStore> store, @Nonnull CommandBuffer<EntityStore> commandBuffer) {
         UpdateSleepState packet = this.createSleepPacket(store, index, archetypeChunk);
@@ -91,7 +96,7 @@ public class CustomUpdateSleepPacketSystem extends UpdateSleepPacketSystem {
     @Nullable
     private SleepMultiplayer createSleepMultiplayer(@Nonnull Store<EntityStore> store) {
         World world = ((EntityStore)store.getExternalData()).getWorld();
-        List<PlayerRef> playerRefs = new ArrayList(world.getPlayerRefs());
+        List<PlayerRef> playerRefs = new ArrayList<>(world.getPlayerRefs());
         playerRefs.removeIf((playerRefx) -> playerRefx.getReference() == null);
         if (playerRefs.size() <= 1) {
             return null;
@@ -99,7 +104,7 @@ public class CustomUpdateSleepPacketSystem extends UpdateSleepPacketSystem {
             playerRefs.sort(Comparator.comparingLong((refx) -> (long)(refx.getUuid().hashCode() + world.hashCode())));
             int sleepersCount = 0;
             int awakeCount = 0;
-            List<UUID> awakeSampleList = new ArrayList(playerRefs.size());
+            List<UUID> awakeSampleList = new ArrayList<>(playerRefs.size());
 
             for(PlayerRef playerRef : playerRefs) {
                 Ref<EntityStore> ref = playerRef.getReference();

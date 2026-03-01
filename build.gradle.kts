@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "com.froxot"
-version = "1.0.0"
+version = "1.0.1"
 
 java {
     toolchain {
@@ -27,5 +27,5 @@ tasks.test {
 }
 
 tasks.jar {
-    archiveBaseName.set("MyHytalePlugin")
+    archiveBaseName.set("BedAsDayNightSwitch")
 }
