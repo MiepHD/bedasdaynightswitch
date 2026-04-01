@@ -23,10 +23,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 public class CustomStartSlumberSystem extends DelayedSystem<EntityStore> {
-    public static final Duration NODDING_OFF_DURATION = Duration.ofMillis(3200L);
-    public static final Duration WAKE_UP_AUTOSLEEP_DELAY = Duration.ofHours(1L);
+    @Nonnull
+    private static final Duration NODDING_OFF_DURATION = Duration.ofMillis(3200L);
 
     private final Config<SleepTilNightConfig> config;
 
@@ -39,7 +40,7 @@ public class CustomStartSlumberSystem extends DelayedSystem<EntityStore> {
         this.checkIfEveryoneIsReadyToSleep(store);
     }
 
-    private void checkIfEveryoneIsReadyToSleep(Store<EntityStore> store) {
+    private void checkIfEveryoneIsReadyToSleep(@Nonnull Store<EntityStore> store) {
         World world = (store.getExternalData()).getWorld();
         Collection<PlayerRef> playerRefs = world.getPlayerRefs();
         if (!playerRefs.isEmpty()) {
@@ -67,7 +68,6 @@ public class CustomStartSlumberSystem extends DelayedSystem<EntityStore> {
         }
     }
 
-
     private Instant computeWakeupInstant(@Nonnull Instant now, float wakeUpHour) {
         LocalDateTime ldt = LocalDateTime.ofInstant(now, ZoneOffset.UTC);
         int hours = (int) wakeUpHour;
@@ -77,7 +77,7 @@ public class CustomStartSlumberSystem extends DelayedSystem<EntityStore> {
         return wakeUpTime.toInstant(ZoneOffset.UTC);
     }
 
-    private static float computeIrlSeconds(Instant startInstant, Instant targetInstant) {
+    private static float computeIrlSeconds(@Nonnull Instant startInstant, @Nonnull Instant targetInstant) {
         long ms = Duration.between(startInstant, targetInstant).toMillis();
         long hours = TimeUnit.MILLISECONDS.toHours(ms);
         double seconds = Math.max(3.0, (double) hours / 6.0);
@@ -120,6 +120,36 @@ public class CustomStartSlumberSystem extends DelayedSystem<EntityStore> {
             }
 
             return var10000;
+        }
+    }
+
+    public static boolean canNotifyOthersAboutTryingToSleep(@Nonnull ComponentAccessor<EntityStore> store, @Nullable Ref<EntityStore> ref) {
+        if (ref != null && ref.isValid()) {
+            PlayerSomnolence somnolenceComponent = (PlayerSomnolence)store.getComponent(ref, PlayerSomnolence.getComponentType());
+            if (somnolenceComponent == null) {
+                return false;
+            } else {
+                boolean var10000;
+                switch (somnolenceComponent.getSleepState()) {
+                    case PlayerSleep.FullyAwake fullAwake:
+                        var10000 = false;
+                        break;
+                    case PlayerSleep.MorningWakeUp morningWakeUp:
+                        WorldTimeResource worldTimeResource = (WorldTimeResource)store.getResource(WorldTimeResource.getResourceType());
+                        var10000 = morningWakeUp.isReadyToSleepAgain(worldTimeResource.getGameTime());
+                        break;
+                    case PlayerSleep.NoddingOff noddingOff:
+                        var10000 = true;
+                        break;
+                    case PlayerSleep.Slumber ignored:
+                        var10000 = true;
+                        break;
+                }
+
+                return var10000;
+            }
+        } else {
+            return true;
         }
     }
 }
