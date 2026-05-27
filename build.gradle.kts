@@ -3,11 +3,11 @@ plugins {
 }
 
 group = "com.froxot"
-version = "1.0.2"
+version = "1.0.3"
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
 }
 
