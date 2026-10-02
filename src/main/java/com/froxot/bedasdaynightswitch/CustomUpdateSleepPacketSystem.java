@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 
 public class CustomUpdateSleepPacketSystem extends UpdateSleepPacketSystem {
     private static final UUID[] EMPTY_UUIDS = new UUID[0];
-    private static final UpdateSleepState PACKET_NO_SLEEP_UI = new UpdateSleepState(false, false, (SleepClock)null, (SleepMultiplayer)null);
+    private static final UpdateSleepState PACKET_NO_SLEEP_UI = new UpdateSleepState(false, false, null, null);
     private static final Duration SPAN_BEFORE_BLACK_SCREEN = Duration.ofMillis(1200L);
 
     public CustomUpdateSleepPacketSystem(@NonNullDecl ComponentType<EntityStore, PlayerRef> playerRefComponentType, @NonNullDecl ComponentType<EntityStore, PlayerSomnolence> playerSomnolenceComponentType, @NonNullDecl ComponentType<EntityStore, SleepTracker> sleepTrackerComponentType, @NonNullDecl ResourceType<EntityStore, WorldSomnolence> worldSomnolenceResourceType, @NonNullDecl ResourceType<EntityStore, WorldTimeResource> worldTimeResourceType) {
@@ -37,13 +37,13 @@ public class CustomUpdateSleepPacketSystem extends UpdateSleepPacketSystem {
 
     public void tick(float dt, int index, @Nonnull ArchetypeChunk<EntityStore> archetypeChunk, @Nonnull Store<EntityStore> store, @Nonnull CommandBuffer<EntityStore> commandBuffer) {
         UpdateSleepState packet = this.createSleepPacket(store, index, archetypeChunk);
-        SleepTracker sleepTrackerComponent = (SleepTracker)archetypeChunk.getComponent(index, SleepTracker.getComponentType());
+        SleepTracker sleepTrackerComponent = archetypeChunk.getComponent(index, SleepTracker.getComponentType());
 
         assert sleepTrackerComponent != null;
 
         packet = sleepTrackerComponent.generatePacketToSend(packet);
         if (packet != null) {
-            PlayerRef playerRefComponent = (PlayerRef)archetypeChunk.getComponent(index, PlayerRef.getComponentType());
+            PlayerRef playerRefComponent = archetypeChunk.getComponent(index, PlayerRef.getComponentType());
 
             assert playerRefComponent != null;
 
@@ -53,17 +53,15 @@ public class CustomUpdateSleepPacketSystem extends UpdateSleepPacketSystem {
     }
 
     private UpdateSleepState createSleepPacket(@Nonnull Store<EntityStore> store, int index, @Nonnull ArchetypeChunk<EntityStore> archetypeChunk) {
-        World world = ((EntityStore)store.getExternalData()).getWorld();
-        WorldSomnolence worldSomnolence = (WorldSomnolence)store.getResource(WorldSomnolence.getResourceType());
+        WorldSomnolence worldSomnolence = store.getResource(WorldSomnolence.getResourceType());
         WorldSleep worldSleepState = worldSomnolence.getState();
-        PlayerSomnolence playerSomnolenceComponent = (PlayerSomnolence)archetypeChunk.getComponent(index, PlayerSomnolence.getComponentType());
+        PlayerSomnolence playerSomnolenceComponent = archetypeChunk.getComponent(index, PlayerSomnolence.getComponentType());
 
         assert playerSomnolenceComponent != null;
 
         PlayerSleep playerSleepState = playerSomnolenceComponent.getSleepState();
         SleepClock var10000;
-        if (worldSleepState instanceof WorldSlumber) {
-            WorldSlumber slumber = (WorldSlumber)worldSleepState;
+        if (worldSleepState instanceof WorldSlumber slumber) {
             var10000 = slumber.createSleepClock();
         } else {
             var10000 = null;
@@ -75,9 +73,6 @@ public class CustomUpdateSleepPacketSystem extends UpdateSleepPacketSystem {
             case PlayerSleep.FullyAwake ignored:
                 var21 = PACKET_NO_SLEEP_UI;
                 break;
-            case PlayerSleep.MorningWakeUp ignored:
-                var21 = PACKET_NO_SLEEP_UI;
-                break;
             case PlayerSleep.NoddingOff noddingOff:
                     long elapsedMs = Duration.between(noddingOff.realTimeStart(), Instant.now()).toMillis();
                     boolean grayFade = elapsedMs > SPAN_BEFORE_BLACK_SCREEN.toMillis();
@@ -86,7 +81,7 @@ public class CustomUpdateSleepPacketSystem extends UpdateSleepPacketSystem {
                     var21 = new UpdateSleepState(grayFade, false, clock, readyToSleep ? this.createSleepMultiplayer(store) : null);
                 break;
             case PlayerSleep.Slumber ignored:
-                var21 = new UpdateSleepState(true, true, clock, (SleepMultiplayer)null);
+                var21 = new UpdateSleepState(true, true, clock, null);
                 break;
         }
 
@@ -95,7 +90,7 @@ public class CustomUpdateSleepPacketSystem extends UpdateSleepPacketSystem {
 
     @Nullable
     private SleepMultiplayer createSleepMultiplayer(@Nonnull Store<EntityStore> store) {
-        World world = ((EntityStore)store.getExternalData()).getWorld();
+        World world = (store.getExternalData()).getWorld();
         List<PlayerRef> playerRefs = new ArrayList<>(world.getPlayerRefs());
         playerRefs.removeIf((playerRefx) -> playerRefx.getReference() == null);
         if (playerRefs.size() <= 1) {
@@ -117,7 +112,7 @@ public class CustomUpdateSleepPacketSystem extends UpdateSleepPacketSystem {
                 }
             }
 
-            UUID[] awakeSample = awakeSampleList.size() > 5 ? EMPTY_UUIDS : (UUID[])awakeSampleList.toArray((x$0) -> new UUID[x$0]);
+            UUID[] awakeSample = awakeSampleList.size() > 5 ? EMPTY_UUIDS : awakeSampleList.toArray(UUID[]::new);
             return new SleepMultiplayer(sleepersCount, awakeCount, awakeSample);
         }
     }
