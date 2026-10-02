@@ -1,7 +1,7 @@
 {
   "Group": "com.froxot",
   "Name": "Bed As Day-Night Switch",
-  "Version": "1.0.5",
+  "Version": "1.0.6",
   "Description": "Allows you to go to sleep during day and wake up in the afternoon.",
   "Main": "com.froxot.bedasdaynightswitch.Main",
   "Authors": [
