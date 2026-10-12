@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "com.froxot"
-version = "1.0.7"
+version = "1.0.7.1"
 
 java {
     toolchain {

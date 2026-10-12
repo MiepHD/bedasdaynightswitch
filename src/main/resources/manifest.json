@@ -1,7 +1,7 @@
 {
   "Group": "com.froxot",
   "Name": "Bed As Day-Night Switch",
-  "Version": "1.0.7",
+  "Version": "1.0.7.1",
   "Description": "Allows you to go to sleep during day and wake up in the afternoon.",
   "Main": "com.froxot.bedasdaynightswitch.Main",
   "Authors": [
@@ -10,9 +10,7 @@
     }
   ],
   "ServerVersion": ">=0.6.0 <0.8.0",
-  "Dependencies": {
-    "Hytale:Beds": ">=1.0.0"
-  },
+  "Dependencies": {},
   "IncludesAssetPack": false,
   "DisabledByDefault": false,
   "OptionalDependencies": {},
