@@ -1,17 +1,24 @@
 {
   "Group": "com.froxot",
   "Name": "Bed As Day-Night Switch",
-  "Version": "1.0.6",
+  "Version": "1.0.7",
   "Description": "Allows you to go to sleep during day and wake up in the afternoon.",
   "Main": "com.froxot.bedasdaynightswitch.Main",
   "Authors": [
     {
-      "Name": "Yazazuyo"
+      "Name": "MiepHD"
     }
   ],
-  "ServerVersion": ">=0.6.0 <0.7.0",
+  "ServerVersion": ">=0.6.0 <0.8.0",
   "Dependencies": {
     "Hytale:Beds": ">=1.0.0"
   },
-  "IncludesAssetPack": false
+  "IncludesAssetPack": false,
+  "DisabledByDefault": false,
+  "OptionalDependencies": {},
+  "CurseForgeId": "1459751",
+  "CurseForgeSlug": "bedasdaynightswitch",
+  "UpdateChecker": {
+    "CurseForge": "1459751"
+  }
 }
